@@ -23,6 +23,24 @@
 # until the application has not served requests for the length of time
 # specified in the configuration's `timeout` option (15 minutes by
 # default).
+#
+# PooledApplication subclasses must implement a single method which
+# creates their specific type of pool.
+#
+#   createPool: (options) ->
+#
+# Pool objects returned by this method must obey the basic contract
+# established by Nack's Pool class:
+#
+#   runOnce
+#   stdout
+#   stderr
+#   quit
+#   proxy
+#
+#   events
+#     worker:spawn
+#     worker:exit
 
 async = require "async"
 fs    = require "fs"
