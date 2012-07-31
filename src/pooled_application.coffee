@@ -33,14 +33,7 @@
 # established by Nack's Pool class:
 #
 #   runOnce
-#   stdout
-#   stderr
 #   quit
-#   proxy
-#
-#   events
-#     worker:spawn
-#     worker:exit
 
 async = require "async"
 fs    = require "fs"
@@ -183,17 +176,6 @@ module.exports = class PooledApplication
           size: env?.POW_WORKERS ? @configuration.workers
           idle: (env?.POW_TIMEOUT ? @configuration.timeout) * 1000
 
-        # Log the workers' stderr and stdout, and log each worker's
-        # PID as it spawns and exits.
-        bufferLines @pool.stdout, (line) => @logger.info line
-        bufferLines @pool.stderr, (line) => @logger.warning line
-
-        @pool.on "worker:spawn", (process) =>
-          @logger.debug "nack worker #{process.child.pid} spawned"
-
-        @pool.on "worker:exit", (process) =>
-          @logger.debug "nack worker exited"
-
       # Invoke and remove all queued callbacks, passing along the
       # error, if any.
       readyCallback err for readyCallback in @readyCallbacks
@@ -229,15 +211,7 @@ module.exports = class PooledApplication
       return next err if err
       @setPoolRunOnceFlag =>
         @restartIfNecessary =>
-          req.proxyMetaVariables =
-            SERVER_PORT: @configuration.dstPort.toString()
-          try
-            @pool.proxy req, res, (err) =>
-              @quit() if err
-              next err
-          finally
-            resume()
-            callback?()
+          @sendToPool(req, res, next, callback)
 
   # Terminate the application, re-initialize it, and invoke the given
   # callback when the application's state becomes ready.

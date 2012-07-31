@@ -11,6 +11,7 @@ url             = require "url"
 connect         = require "connect"
 request         = require "request"
 RackApplication = require "./rack_application"
+ProcfileApplication = require "./procfile_application"
 
 {pause} = require "./util"
 {dirname, join, exists} = require "path"
@@ -55,6 +56,7 @@ module.exports = class HttpServer extends connect.HTTPServer
       o @findHostConfiguration
       o @handleStaticRequest
       o @findRackApplication
+      o @findProcfileApplication
       o @handleProxyRequest
       o @handleRvmDeprecationRequest
       o @handleApplicationRequest
@@ -68,6 +70,7 @@ module.exports = class HttpServer extends connect.HTTPServer
 
     @staticHandlers = {}
     @rackApplications = {}
+    @procfileUrls = {}
     @requestCount = 0
 
     @accessLog = @configuration.getLogger "access"
@@ -178,6 +181,28 @@ module.exports = class HttpServer extends connect.HTTPServer
       # remove it from the cache.
       else if application = @rackApplications[root]
         delete @rackApplications[root]
+        application.quit()
+
+      next()
+
+  # Check to see if the application root contains a `Procfile`
+  # file. If it does, find the existing `ProcfileApplication` instance for
+  # the root, or create and cache a new one. Then annotate the request
+  # object with the URL so it can be handled by `handleProxyRequest`.
+  findProcfileApplication: (req, res, next) =>
+    return next() unless root = req.pow.root
+
+    exists join(root, "Procfile"), (procfileExists) =>
+      if procfileExists
+        req.pow.url = @procfileUrls[root] ?=
+          new ProcfileApplication @configuration, root, req.pow.host
+
+      # If `Procfile` isn't present but there's an existing
+      # `ProcfileApplication` for the root, terminate the application and
+      # remove it from the cache.
+      else if @procfileUrls[root]?
+        delete @procfileUrls[root]
+        # TODO: Quit application
         application.quit()
 
       next()
