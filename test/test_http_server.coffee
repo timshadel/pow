@@ -49,7 +49,12 @@ module.exports = testCase
             proceed()
         (proceed) ->
           request "GET", "/", host: "env.dev", (body) ->
-            test.same "Hello Pow", JSON.parse(body).POW_TEST
+            try
+              test.same "Hello Pow", JSON.parse(body).POW_TEST
+            catch error
+              test.same "Hello Pow", body
+              # console.log body
+              test.ifError error
             proceed()
         (proceed) ->
           request "GET", "/", host: "pid.dev", (body) ->

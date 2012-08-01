@@ -211,7 +211,7 @@ module.exports = class PooledApplication
       return next err if err
       @setPoolRunOnceFlag =>
         @restartIfNecessary =>
-          @sendToPool(req, res, next, callback)
+          @sendToPool(req, res, next, resume, callback)
 
   # Terminate the application, re-initialize it, and invoke the given
   # callback when the application's state becomes ready.

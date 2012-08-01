@@ -17,7 +17,7 @@ module.exports = class ProcfileApplication extends PooledApplication
       @apps = @server?.formation?.pools?['web']
     @server
 
-  sendToPool: (req, res, next, callback) ->
+  sendToPool: (req, res, next, resume, callback) ->
     port = @apps?[0]?.port
     return next() unless port?
 

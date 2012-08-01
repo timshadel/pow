@@ -25,7 +25,7 @@ module.exports = class RackApplication extends PooledApplication
     @pool.on "worker:exit", (process) =>
       @logger.debug "nack worker exited"
 
-  sendToPool: (req, res, next, callback) ->
+  sendToPool: (req, res, next, resume, callback) ->
     req.proxyMetaVariables =
       SERVER_PORT: @configuration.dstPort.toString()
     try
