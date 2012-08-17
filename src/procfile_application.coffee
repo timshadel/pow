@@ -7,7 +7,7 @@ module.exports = class ProcfileApplication extends PooledApplication
   constructor: ->
     super
     @procfile = join(@root, "Procfile")
-    @server   = createServer(@procfile)
+    @server   = norman.createServer(@procfile)
     @server.runOnce = false
 
   # Objects returned by this method must honor `runOnce` and

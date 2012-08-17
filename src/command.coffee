@@ -9,6 +9,8 @@ util = require "util"
 # `top`, Activity Monitor, and so on.
 process.title = "pow"
 
+console.log "env", process.env
+
 # Print valid command-line arguments and exit with a non-zero exit
 # code if invalid arguments are passed to the `pow` binary.
 usage = ->

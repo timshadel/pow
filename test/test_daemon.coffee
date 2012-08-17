@@ -31,12 +31,13 @@ module.exports = testCase
       configuration = new Configuration POW_HOST_ROOT: fixturePath("tmp"), POW_HTTP_PORT: port
       daemon = new Daemon configuration
 
-      daemon.start()
       daemon.on "error", (err) ->
         test.ok err
         test.ok !daemon.started
         server.close()
         test.done()
+
+      daemon.start()
 
   "touching restart.txt removes the file and emits a restart event": (test) ->
     test.expect 1
