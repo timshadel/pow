@@ -31,11 +31,12 @@ module.exports = testCase
       configuration = new Configuration POW_HOST_ROOT: fixturePath("tmp"), POW_HTTP_PORT: port
       daemon = new Daemon configuration
 
-      daemon.on "error", (err) ->
+      daemon.once "error", (err) ->
         test.ok err
         test.ok !daemon.started
+        server.on 'close', ->
+          test.done()
         server.close()
-        test.done()
 
       daemon.start()
 
