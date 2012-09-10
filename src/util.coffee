@@ -130,6 +130,7 @@ exports.sourceScriptEnv = (script, env, options, callback) ->
   # error occurs, rewrite the error to a more descriptive
   # message. Otherwise, read and parse the environment from the
   # temporary file and pass it along to the callback.
+  console.log "Running (#{cwd}): #{command}"
   exec ["bash", "-c", command], {cwd, env}, (err, stdout, stderr) ->
     if err
       err.message = "'#{script}' failed to load:\n#{command}"
@@ -163,6 +164,7 @@ exports.getUserEnv = (callback, defaultEncoding = "UTF-8") ->
 # Execute a command without spawning a subshell. The command argument
 # is an array of program name and arguments.
 exec = (command, options, callback) ->
+  console.log "In 'exec', calling 'execFile'", options
   unless callback?
     callback = options
     options = {}

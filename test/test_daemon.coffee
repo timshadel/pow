@@ -14,13 +14,15 @@ module.exports = testCase
     configuration = new Configuration POW_HOST_ROOT: fixturePath("tmp"), POW_HTTP_PORT: 0, POW_DNS_PORT: 0
     daemon = new Daemon configuration
 
-    daemon.start()
     daemon.on "start", ->
       test.ok daemon.started
-      daemon.stop()
       daemon.on "stop", ->
         test.ok !daemon.started
         test.done()
+
+      daemon.stop()
+
+    daemon.start()
 
   "start rolls back when it can't boot a server": (test) ->
     test.expect 2

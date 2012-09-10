@@ -106,6 +106,7 @@ module.exports = class PooledApplication
     async.reduce [".powrc", ".envrc", ".powenv"], env, (env, filename, callback) =>
       exists script = join(@root, filename), (scriptExists) ->
         if scriptExists
+          console.log "Found #{script}, have env:", env
           sourceScriptEnv script, env, callback
         else
           callback null, env

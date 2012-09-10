@@ -12,6 +12,8 @@ module.exports = class RackApplication extends PooledApplication
   createPool: (options) ->
     return @pool if @pool
 
+    console.log "RackApplication env:", options.env
+
     @pool = nack.createPool @rackConfig, options
 
     # Log the workers' stderr and stdout, and log each worker's
